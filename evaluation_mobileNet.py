@@ -6,7 +6,7 @@ import itertools
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 
-# ✅ 1. 加载 COCO 数据集
+# 加载 COCO 数据集
 print("\n🚀 Loading COCO dataset...")
 coco = COCO("D:/dev/Read_dataset/annotations/instances_val2017.json")
 
@@ -14,13 +14,13 @@ selected_categories = ["person", "chair", "car", "bicycle", "motorcycle", "bus",
                        "fire hydrant", "stop sign", "bench", "cat", "dog", "suitcase", "bottle",
                        "wine glass", "couch", "bed", "dining table", "vase", "scissors"]
 
-# ✅ 1. MobileNet-SSD 21 类别 (ID 0-20，其中 0 = background)
+# 1. MobileNet-SSD 21 类别 (ID 0-20，其中 0 = background)
 mobilenet_classes = ["background", "aeroplane", "bicycle", "bird", "boat",
            "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
            "dog", "horse", "motorbike", "person", "pottedplant",
            "sheep", "sofa", "train", "tvmonitor"]
 
-# ✅ 2. 只映射 `selected_categories` 中的类别
+# 2. 只映射 `selected_categories` 中的类别
 mobilenet_to_coco = {}
 for mobilenet_id, mobilenet_name in enumerate(mobilenet_classes):
     if mobilenet_name == "background" or mobilenet_name not in selected_categories:
@@ -29,7 +29,7 @@ for mobilenet_id, mobilenet_name in enumerate(mobilenet_classes):
     if coco_ids:
         mobilenet_to_coco[mobilenet_id] = coco_ids[0]  # 取第一个匹配的类别 ID
 
-# ✅ 3. 打印修正后的类别映射
+# 3. 打印修正后的类别映射
 print("\n📌 修正后的 MobileNet-SSD → COCO 类别映射 (仅限 selected_categories):")
 for mobilenet_id, coco_id in mobilenet_to_coco.items():
     mobilenet_name = mobilenet_classes[mobilenet_id]  # 获取 MobileNet-SSD 类别名称
@@ -38,7 +38,7 @@ for mobilenet_id, coco_id in mobilenet_to_coco.items():
 
 print("\n✅ MobileNet-SSD to COCO category mapping corrected!")
 
-# ✅ 4. 选择 COCO 2017 val 数据集中包含这些类别的图片
+# 4. 选择 COCO 2017 val 数据集中包含这些类别的图片
 selected_cat_ids = coco.getCatIds(catNms=[mobilenet_classes[mobilenet_id] for mobilenet_id in mobilenet_to_coco.keys()])
 selected_img_ids = list(set(itertools.chain.from_iterable(
     [coco.getImgIds(catIds=[cat]) for cat in selected_cat_ids]
@@ -46,7 +46,7 @@ selected_img_ids = list(set(itertools.chain.from_iterable(
 
 print(f"\n✅ Found {len(selected_img_ids)} images containing selected MobileNet-SSD categories.")
 
-# ✅ 5. 加载 MobileNet-SSD 预训练模型
+# 5. 加载 MobileNet-SSD 预训练模型
 print("\n🔍 Loading MobileNet-SSD model...")
 mobilenet_net = cv2.dnn.readNetFromCaffe(
     "E:/GIX course/513 Signal processing/final project/deploy.prototxt", 
@@ -54,7 +54,7 @@ mobilenet_net = cv2.dnn.readNetFromCaffe(
 )
 print("✅ MobileNet-SSD Model Loaded Successfully!")
 
-# ✅ 6. 目标检测函数 (MobileNet-SSD)
+# 6. 目标检测函数 (MobileNet-SSD)
 def detect_objects_mobilenet(frame, conf_threshold=0.4):
     """ 使用 MobileNet-SSD 进行目标检测，并转换类别 ID """
     h, w = frame.shape[:2]
@@ -83,11 +83,11 @@ def detect_objects_mobilenet(frame, conf_threshold=0.4):
 
     return detected_results
 
-# ✅ 7. 评估 MobileNet-SSD
+# 7. 评估 MobileNet-SSD
 results_data = []
 num_samples = len(selected_img_ids)
-conf_values = [0.3]  # 置信度阈值
-iou_values = [0.5]   # IoU 阈值
+conf_values = [0.3]  
+iou_values = [0.5]  
 
 print("\n🚀 Running MobileNet-SSD Evaluation on COCO2017 val set...")
 

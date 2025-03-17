@@ -9,7 +9,7 @@ from pycocotools.cocoeval import COCOeval
 import cv2
 import numpy as np
 
-# ✅ 1. 加载 COCO 数据集
+# 1. 加载 COCO 数据集
 print("\n🚀 Loading COCO dataset...")
 coco = COCO("D:/dev/Read_dataset/annotations/instances_val2017.json")
 
@@ -17,19 +17,19 @@ selected_categories = ["person", "chair", "car", "bicycle", "motorcycle", "bus",
                        "fire hydrant", "stop sign", "bench", "cat", "dog", "suitcase", "bottle",
                        "wine glass", "couch", "bed", "dining table", "vase", "scissors"]
 
-# ✅ 2. 加载 Faster R-CNN 预训练模型
+# 2. 加载 Faster R-CNN 预训练模型
 print("\n🔍 Loading Faster R-CNN model...")
 faster_rcnn_model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
 faster_rcnn_model.eval()
 print("✅ Faster R-CNN Model Loaded Successfully!")
 
-# ✅ 3. 计算 COCO 类别索引 (COCO → Faster R-CNN)
+# 3. 计算 COCO 类别索引 (COCO → Faster R-CNN)
 coco_to_faster_rcnn = {}
 for cat in selected_categories:
     coco_id = coco.getCatIds(catNms=[cat])[0]  # 获取 COCO 类别 ID
     coco_to_faster_rcnn[coco_id] = coco_id  # Faster R-CNN 直接使用 COCO ID
 
-# ✅ 4. 打印类别映射
+# 4. 打印类别映射
 print("\n📌 Faster R-CNN 类别索引映射 (仅限 selected_categories):")
 for coco_id in coco_to_faster_rcnn:
     coco_name = coco.loadCats([coco_id])[0]['name']
@@ -37,7 +37,7 @@ for coco_id in coco_to_faster_rcnn:
 
 print("\n✅ Faster R-CNN category mapping complete!")
 
-# ✅ 5. 选择 COCO 2017 val 数据集中包含这些类别的图片
+# 5. 选择 COCO 2017 val 数据集中包含这些类别的图片
 selected_cat_ids = list(coco_to_faster_rcnn.keys())
 selected_img_ids = list(set(itertools.chain.from_iterable(
     [coco.getImgIds(catIds=[cat]) for cat in selected_cat_ids]
@@ -45,7 +45,7 @@ selected_img_ids = list(set(itertools.chain.from_iterable(
 
 print(f"\n✅ Found {len(selected_img_ids)} images containing selected Faster R-CNN categories.")
 
-# ✅ 6. 目标检测函数 (Faster R-CNN)
+# 6. 目标检测函数 (Faster R-CNN)
 def detect_objects_faster_rcnn(frame, conf_threshold=0.4):
     """ 使用 Faster R-CNN 进行目标检测，并转换类别 ID """
     img_tensor = F.to_tensor(frame).unsqueeze(0)  # 转换为 PyTorch tensor
@@ -73,11 +73,11 @@ def detect_objects_faster_rcnn(frame, conf_threshold=0.4):
 
     return detected_results
 
-# ✅ 7. 评估 Faster R-CNN
+# 7. 评估 Faster R-CNN
 results_data = []
 num_samples = len(selected_img_ids)
-conf_values = [0.3]  # 置信度阈值
-iou_values = [0.5]   # IoU 阈值
+conf_values = [0.3]  
+iou_values = [0.5]  
 
 print("\n🚀 Running Faster R-CNN Evaluation on COCO2017 val set...")
 
